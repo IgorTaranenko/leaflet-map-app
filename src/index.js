@@ -1,6 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './components/App';
+import {createStore} from 'redux';
+import Root from './containers/Root';
+import rootReducer from './reducers/rootReducer.js'
+const initialState = {};
 
+const store = createStore(rootReducer, initialState);
 
-render(<App />, document.getElementById('root'));
+render(<Root store={store}/>, document.getElementById('root'));

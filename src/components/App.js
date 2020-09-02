@@ -1,5 +1,4 @@
 import React from 'react';
-import '../style/style.less';
 
 const App = () => {
 	return(
