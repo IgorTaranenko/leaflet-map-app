@@ -17,7 +17,6 @@ const Auth = (props) => {
 		const data = {login, password};
 		props.logIN(data);
 	}
-	console.log(props);
 	return (
 		
 		<div className="wrapper wrapper-v-center wrapper-g-center mt-5 ">
@@ -56,10 +55,5 @@ const mapDispatchToProps = dispatch => {
         logIN: data => dispatch(auth(data))
     };
 };
-const mapStateToProps = (state) => {
-    return {
-        state: state
-    };
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+export default connect(null, mapDispatchToProps)(Auth);

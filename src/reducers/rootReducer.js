@@ -2,7 +2,7 @@ import {AUTH} from '../actions/types.js';
 const initialState = {
 	setedLogin: "Admin",
 	setedPassword: "Admin",
-	isAuth: false
+	isAuth: true
 };
 export const rootReducer = (state = initialState, action) => {
 	switch (action.type) {
