@@ -6,9 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import App from '../components/App';
 import Header from '../components/Header';
 import {useRoutes} from '../hooks/useRoutes.js';
+import {connect} from 'react-redux';
 
-export default function Root ({store}) {
-	const routes = useRoutes(false);
+function Root ({store, isAuth}) {
+	const routes = useRoutes(isAuth);
 	return (
 		<Provider store={store}>
 			<Header></Header>
@@ -20,3 +21,11 @@ export default function Root ({store}) {
 		</Provider>
 	);
 }
+
+const mapStateToProps = (state) => {
+    return {
+        isAuth: state.isAuth
+    };
+};
+
+export default connect(mapStateToProps, null)(Root);
