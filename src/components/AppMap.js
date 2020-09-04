@@ -3,8 +3,7 @@ import { Map as LeafletMap, TileLayer } from 'react-leaflet';
 import MarkerItem from './MarkerItem';
 import '../style/style.less';
 import '../style/AppMap.less';
-import restaurants from '../json/restaurants';
-import bike_shelters from '../json/bike_shelters.json';
+import PlacesList from './PlacesList';
 
 
 class AppMap extends React.Component {
@@ -13,16 +12,13 @@ class AppMap extends React.Component {
         this.state = {
             hasLocation: false,
             isLoading: false,
-            isLoaded: false,
+            isLoaded: true,
             mapCenter: {
                 lat: 51.505,
                 lng: -0.09,
             },
             userMarkers: [],
             showMarkers: [],
-            restaurants: restaurants.restaurants,
-            bike_shelters: bike_shelters.bike_shelters
-            
         };    
     }   
     mapRef = createRef();
@@ -37,12 +33,6 @@ class AppMap extends React.Component {
             hasLocation: true,
             mapCenter: e.latlng
         })
-    }
-    componentDidUpdate = () => {
-
-        console.log('userMarkers', this.state.userMarkers);
-        console.log('showMarkers',this.state.showMarkers);
-        console.log('....');
     }
     setMarker = (e) => {
         const position = {lat: e.latlng.lat, lng: e.latlng.lng};
@@ -68,16 +58,23 @@ class AppMap extends React.Component {
             this.setState({showMarkers: [...showMarkers, ...userMarkers]});
         }
     }
+    showRestaurants = (data) => {
+        const {showMarkers} = this.state;
+        this.setState({showMarkers: [...showMarkers, [...data.latlng]]})
+    }
     delay = () => {
-        return new Promise(resolve => setTimeout(resolve, 1500));
+        return new Promise(resolve => setTimeout(resolve, 1000));
     }
     downloadPlaces = () => {
-
+        this.setState({isLoading: true, isLoaded: true});
+        this.delay().then(() => {
+            this.setState({isLoading: false})
+        });
     }
 
 
     render() {
-        const {hasLocation, isLoaded, mapCenter, myMarkers, showMarkers} = this.state;
+        const {hasLocation, isLoaded, mapCenter, showMarkers} = this.state;
         return (
             <Fragment>
                 <div className="mb-2 wrapper wrapper-row">
@@ -120,11 +117,7 @@ class AppMap extends React.Component {
                     </LeafletMap>
                     {
                         isLoaded ? 
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                        </ul> :
+                        <PlacesList isLoading={this.state.isLoading} showRestaurants={this.showRestaurants} /> :
                         <button onClick={this.downloadPlaces} class="btn btn-primary download">Загрузить список мест</button>
                     }
                 </div>
