@@ -1,11 +1,21 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import AppMap from './AppMap';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import {connect} from 'react-redux';
 
-const App = () => {
+const App = (props) => {
 	return(
-		<AppMap />
+		<Fragment>
+			<div>
+				<AppMap />
+			</div>
+		</Fragment>		
 	);
 }
 
-export default App
+const mapStateToProps = (state) => {
+    return {
+        getLocation: state.getLocation
+    };
+};
+
+export default connect(mapStateToProps, null)(App)

@@ -1,4 +1,4 @@
-import {AUTH} from '../actions/types.js';
+import {AUTH, GET_LOCATION} from '../actions/types.js';
 const initialState = {
 	setedLogin: "Admin",
 	setedPassword: "Admin",
@@ -16,6 +16,9 @@ export const rootReducer = (state = initialState, action) => {
 				isAuth = false;
 			}
 			return {...state, isAuth: isAuth};
+		case GET_LOCATION:
+			const getLocation = action.payload;
+			return {...state, getLocation: getLocation}
 		default:
 			return state;
 	}

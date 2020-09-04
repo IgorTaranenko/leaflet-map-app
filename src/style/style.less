@@ -1,5 +1,19 @@
-.leaflet-container {
-	position: relative;
-    height: 400px;
-    width: 800px;
+.wrapper {
+	display: flex;
+	width: 100%;
+	&-v-center {
+		align-items: center; 
+	}
+	&-g-center {
+		justify-content: center;
+	}
+	&-col {
+		flex-direction: column;
+	}
+	&-row {
+		flex-direction: row;
+	}
+	&-space-beetween {
+		justify-content: space-between;
+	}
 }
