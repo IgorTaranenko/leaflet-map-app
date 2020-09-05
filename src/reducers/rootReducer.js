@@ -1,8 +1,12 @@
-import {AUTH, GET_LOCATION} from '../actions/types.js';
+import {AUTH} from '../actions/types.js';
 const initialState = {
 	setedLogin: "Admin",
 	setedPassword: "Admin",
-	isAuth: true
+	isAuth: true,
+	userMarkers: [],
+	restaurantsMarkers: [],
+	bikeSheltersMarkers: [],
+	showMarkers: []
 };
 export const rootReducer = (state = initialState, action) => {
 	switch (action.type) {
@@ -15,10 +19,7 @@ export const rootReducer = (state = initialState, action) => {
 			} else {
 				isAuth = false;
 			}
-			return {...state, isAuth: isAuth};
-		case GET_LOCATION:
-			const getLocation = action.payload;
-			return {...state, getLocation: getLocation}
+			return {...state, isAuth: isAuth};			
 		default:
 			return state;
 	}

@@ -1,9 +1,10 @@
 import React, {createRef, Fragment} from 'react'
 import { Map as LeafletMap, TileLayer } from 'react-leaflet';
+import {connect} from 'react-redux'
 import MarkerItem from './MarkerItem';
-import '../style/style.less';
-import '../style/AppMap.less';
 import PlacesList from './PlacesList';
+import '../style/AppMap.less';
+import '../style/style.less';
 
 
 class AppMap extends React.Component {
@@ -17,54 +18,61 @@ class AppMap extends React.Component {
                 lat: 51.505,
                 lng: -0.09,
             },
-            userMarkers: [],
-            showMarkers: [],
+            zoom: 6,
+            userMarkers: [],            
+            saveUserMarkers: [],
+            restaurantsMarkers: [],
+            bikeSheltersMarkers: []
         };    
     }   
     mapRef = createRef();
+
     getLocate = () => {
         const map = this.mapRef.current
         if (map != null) {
             map.leafletElement.locate()
         }
     }
+
     handleLocationFound = (e) => {
         this.setState({
             hasLocation: true,
             mapCenter: e.latlng
         })
     }
+
+    // Установка, сохранение, показ маркеров
     setMarker = (e) => {
         const position = {lat: e.latlng.lat, lng: e.latlng.lng};
-        const {showMarkers, userMarkers} = this.state;
+        const {userMarkers} = this.state;
         this.setState({
             userMarkers: [...userMarkers, position],
-            showMarkers: [...showMarkers, position]
         });
     }
+
     saveUserMarkers = () => {
-        const {userMarkers} = this.state;
+        const {userMarkers, saveUserMarkers} = this.state;
         if (userMarkers.length) {
-            this.setState({showMarkers: []});
+            this.setState({saveUserMarkers: [...saveUserMarkers, ...userMarkers], userMarkers: []});
         } else {
-            alert("There aren't markers");
+            alert("Нет маркеров!");
         }
     }
+
     showUserMarkers = () => {
-        const {userMarkers, showMarkers} = this.state;
-        if (showMarkers.length) {
+        const {userMarkers, saveUserMarkers} = this.state;
+        if (userMarkers.length) {
             alert("Сперва сохраните свои метки!",);
         } else {
-            this.setState({showMarkers: [...showMarkers, ...userMarkers]});
+            this.setState({userMarkers: saveUserMarkers, saveUserMarkers: []});
         }
     }
-    showRestaurants = (data) => {
-        const {showMarkers} = this.state;
-        this.setState({showMarkers: [...showMarkers, [...data.latlng]]})
-    }
+    // 
+
     delay = () => {
         return new Promise(resolve => setTimeout(resolve, 1000));
     }
+
     downloadPlaces = () => {
         this.setState({isLoading: true, isLoaded: true});
         this.delay().then(() => {
@@ -72,21 +80,48 @@ class AppMap extends React.Component {
         });
     }
 
+    showRestaurants = (data) => {
+        const {restaurantsMarkers} = this.state;
+        if (!restaurantsMarkers.length) {
+            const restaurantsPositions = data.map(item => {
+                return {lat: item.latlng[0], lng: item.latlng[1], name: item.name}
+            });
+            this.setState({restaurantsMarkers: restaurantsPositions, mapCenter: restaurantsPositions[0], zoom: 10});
+        } else {
+            this.setState({restaurantsMarkers: []});
+        }
+    }
+    showBikeShelters = (data) => {
+        const {bikeSheltersMarkers} = this.state;
+        if (!bikeSheltersMarkers.length) {
+            const bikeSheltersPositions = data.map(item => {
+                return {lat: item.latlng[0], lng: item.latlng[1], name: item.name}
+            });
+            console.log(bikeSheltersPositions)
+            this.setState({bikeSheltersMarkers: bikeSheltersPositions, mapCenter: bikeSheltersPositions[0], zoom: 10});
+        } else {
+            this.setState({bikeSheltersMarkers: []});
+        }
+    }
+    componentDidUpdate() {
+        console.log('userMarkers', this.state.userMarkers);
+        console.log('saveUserMarkers', this.state.saveUserMarkers);
+        console.log('.....');
+    }
 
     render() {
-        const {hasLocation, isLoaded, mapCenter, showMarkers} = this.state;
+        const {hasLocation, isLoaded, mapCenter, userMarkers, restaurantsMarkers, bikeSheltersMarkers} = this.state;
         return (
             <Fragment>
                 <div className="mb-2 wrapper wrapper-row">
                     <LeafletMap
                         ref={this.mapRef}
                         center={this.state.mapCenter}
-                        minzoom={6}
-                        zoom={6}
+                        zoom={this.state.zoom}
                         onLocationfound={this.handleLocationFound}
                         onClick={this.setMarker}
                         minZoom={2}
-                        maxZoom={10}
+                        maxZoom={13}
                         attributionControl={true}
                         zoomControl={true}
                         doubleClickZoom={true}
@@ -97,7 +132,6 @@ class AppMap extends React.Component {
                         easeLinearity={0.35}
                         noWrap={true}
                         maxBounds={[[-90.0, -180.0],[90.0, 180.0]]}
-                        continuousWorld={false}
                     >
                     <TileLayer
                         url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
@@ -105,8 +139,18 @@ class AppMap extends React.Component {
                         noWrap={true}
                     />
                     {
-                        showMarkers.map(item => {
-                            return <MarkerItem position={item}/>
+                        userMarkers.map(item => {
+                            return <MarkerItem position={item} />
+                        })
+                    }
+                    {
+                        restaurantsMarkers.map(item => {
+                            return <MarkerItem position={item} />
+                        })
+                    }
+                    {
+                        bikeSheltersMarkers.map(item => {
+                            return <MarkerItem position={item} />
                         })
                     }
                     {hasLocation ? 
@@ -117,7 +161,7 @@ class AppMap extends React.Component {
                     </LeafletMap>
                     {
                         isLoaded ? 
-                        <PlacesList isLoading={this.state.isLoading} showRestaurants={this.showRestaurants} /> :
+                        <PlacesList isLoading={this.state.isLoading} showRestaurants={this.showRestaurants} showBikeShelters={this.showBikeShelters}/> :
                         <button onClick={this.downloadPlaces} class="btn btn-primary download">Загрузить список мест</button>
                     }
                 </div>
@@ -134,4 +178,15 @@ class AppMap extends React.Component {
     }
 }
 
-export default AppMap
+const mapDispatchToProps = dispatch => {
+    return {
+        setUserMarker: data => dispatch(setUserMarker(data))
+    };
+};
+const mapStateToProps = (state) => {
+    return {
+        showMarkers: state.showMarkers
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppMap)

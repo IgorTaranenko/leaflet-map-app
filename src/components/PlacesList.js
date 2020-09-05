@@ -14,6 +14,16 @@ const PlacesList = (props) => {
 		});
 		props.showRestaurants(restaurantsList);
 	}
+	const getBikeShelters = () => {
+		const bikeSheltersList = bike_shelters.features.map(item => {
+			return {
+				name: item.properties.name,
+				latlng: [item.geometry.coordinates[1], item.geometry.coordinates[0]]
+			}
+		});
+		props.showBikeShelters(bikeSheltersList);
+	}
+	
 	return (
 		<Fragment>
 			{
@@ -23,7 +33,7 @@ const PlacesList = (props) => {
 				</div> :
 				<ul className="places-list">
 					<li onClick={getRestaurants} className="places-list-item">Рестораны</li>
-					<li className="places-list-item">Аренда велосипедов</li>
+					<li onClick={getBikeShelters} className="places-list-item">Аренда велосипедов</li>
 				</ul>
 			}
 		</Fragment>
