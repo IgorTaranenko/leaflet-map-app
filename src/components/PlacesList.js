@@ -1,10 +1,17 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useState} from 'react';
 import { Spinner } from 'react-bootstrap';
 import bike_shelters from '../json/bike_shelters.json';
 import restaurants from '../json/restaurants.json';
 
 const PlacesList = (props) => {
+	const [restStyle, setRestStyle] = useState('places-list-item');
+	const [bikeStyle, setBikeStyle] = useState('places-list-item');
 	const getRestaurants = () => {
+		if (restStyle === 'places-list-item') {
+			setRestStyle('places-list-item checked');
+		} else {
+			setRestStyle('places-list-item');
+		}
 		const restaurantsList = restaurants.restaurants.map(item => {
 			return {
 				id: item.id,
@@ -15,6 +22,11 @@ const PlacesList = (props) => {
 		props.showRestaurants(restaurantsList);
 	}
 	const getBikeShelters = () => {
+		if (bikeStyle === 'places-list-item') {
+			setBikeStyle('places-list-item checked');
+		} else {
+			setBikeStyle('places-list-item');
+		}
 		const bikeSheltersList = bike_shelters.features.map(item => {
 			return {
 				name: item.properties.name,
@@ -31,11 +43,13 @@ const PlacesList = (props) => {
 				<div className="ml-4">
 					<Spinner animation="border" />
 				</div> :
-				<ul className="places-list">
-					<li onClick={getRestaurants} className="places-list-item">Рестораны</li>
-					<li onClick={getBikeShelters} className="places-list-item">Аренда велосипедов</li>
-				</ul>
-			}
+				<div className="ml-5">
+					<h3>Список мест:</h3>
+					<ul className="places-list">
+						<li onClick={getRestaurants} className={restStyle}>Рестораны</li>
+						<li onClick={getBikeShelters} className={bikeStyle}>Аренда велосипедов</li>
+					</ul>
+				</div>			}
 		</Fragment>
 	);
 }

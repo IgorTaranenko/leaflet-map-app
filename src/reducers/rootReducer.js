@@ -2,7 +2,7 @@ import {AUTH} from '../actions/types.js';
 const initialState = {
 	setedLogin: "Admin",
 	setedPassword: "Admin",
-	isAuth: true,
+	isAuth: false,
 	userMarkers: [],
 	restaurantsMarkers: [],
 	bikeSheltersMarkers: [],

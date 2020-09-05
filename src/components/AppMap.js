@@ -1,6 +1,5 @@
 import React, {createRef, Fragment} from 'react'
 import { Map as LeafletMap, TileLayer } from 'react-leaflet';
-import {connect} from 'react-redux'
 import MarkerItem from './MarkerItem';
 import PlacesList from './PlacesList';
 import '../style/AppMap.less';
@@ -13,12 +12,13 @@ class AppMap extends React.Component {
         this.state = {
             hasLocation: false,
             isLoading: false,
-            isLoaded: true,
+            isLoaded: false,
             mapCenter: {
                 lat: 51.505,
                 lng: -0.09,
             },
             zoom: 6,
+            myLocate: null,
             userMarkers: [],            
             saveUserMarkers: [],
             restaurantsMarkers: [],
@@ -37,7 +37,8 @@ class AppMap extends React.Component {
     handleLocationFound = (e) => {
         this.setState({
             hasLocation: true,
-            mapCenter: e.latlng
+            mapCenter: e.latlng,
+            myLocate: e.latlng
         })
     }
 
@@ -45,9 +46,23 @@ class AppMap extends React.Component {
     setMarker = (e) => {
         const position = {lat: e.latlng.lat, lng: e.latlng.lng};
         const {userMarkers} = this.state;
-        this.setState({
-            userMarkers: [...userMarkers, position],
-        });
+        let name = prompt('Введите имя маркера', '');
+        if (name == null) return;
+        if (name !== '') {
+            this.setState({
+                userMarkers: [...userMarkers, {position, name}],
+            });
+        } else {
+            name = prompt('Введите непустое имя маркера', '');
+            if (name == null) return;
+            if (name) {
+                this.setState({
+                    userMarkers: [...userMarkers, {position, name}],
+                });    
+            } else {
+                return null
+            }             
+        }
     }
 
     saveUserMarkers = () => {
@@ -84,10 +99,10 @@ class AppMap extends React.Component {
         const {restaurantsMarkers} = this.state;
         if (!restaurantsMarkers.length) {
             const restaurantsPositions = data.map(item => {
-                return {lat: item.latlng[0], lng: item.latlng[1], name: item.name}
+                return {position: {lat: item.latlng[0], lng: item.latlng[1]}, name: item.name}
             });
-            this.setState({restaurantsMarkers: restaurantsPositions, mapCenter: restaurantsPositions[0], zoom: 10});
-        } else {
+            this.setState({restaurantsMarkers: restaurantsPositions, mapCenter: restaurantsPositions[0].position, zoom: 12});
+        }   else {
             this.setState({restaurantsMarkers: []});
         }
     }
@@ -105,12 +120,12 @@ class AppMap extends React.Component {
     }
     componentDidUpdate() {
         console.log('userMarkers', this.state.userMarkers);
-        console.log('saveUserMarkers', this.state.saveUserMarkers);
+        console.log('restaurantsMarkers', this.state.restaurantsMarkers);
         console.log('.....');
     }
 
     render() {
-        const {hasLocation, isLoaded, mapCenter, userMarkers, restaurantsMarkers, bikeSheltersMarkers} = this.state;
+        const {hasLocation, isLoaded, mapCenter, userMarkers, restaurantsMarkers, bikeSheltersMarkers, myLocate} = this.state;
         return (
             <Fragment>
                 <div className="mb-2 wrapper wrapper-row">
@@ -140,12 +155,12 @@ class AppMap extends React.Component {
                     />
                     {
                         userMarkers.map(item => {
-                            return <MarkerItem position={item} />
+                            return <MarkerItem position={item.position} name={item.name}/>
                         })
                     }
                     {
                         restaurantsMarkers.map(item => {
-                            return <MarkerItem position={item} />
+                            return <MarkerItem position={item.position} name={item.name}/>
                         })
                     }
                     {
@@ -154,7 +169,7 @@ class AppMap extends React.Component {
                         })
                     }
                     {hasLocation ? 
-                        <MarkerItem position={this.state.mapCenter}/> :
+                        <MarkerItem position={myLocate} name='Ваша геолокация!'/> :
                         null
                     }
 
@@ -178,15 +193,4 @@ class AppMap extends React.Component {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        setUserMarker: data => dispatch(setUserMarker(data))
-    };
-};
-const mapStateToProps = (state) => {
-    return {
-        showMarkers: state.showMarkers
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppMap)
+export default AppMap

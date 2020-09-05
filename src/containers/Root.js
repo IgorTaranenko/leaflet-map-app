@@ -3,7 +3,6 @@ import {Provider} from 'react-redux';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Container} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import App from '../components/App';
 import Header from '../components/Header';
 import {useRoutes} from '../hooks/useRoutes.js';
 import {connect} from 'react-redux';

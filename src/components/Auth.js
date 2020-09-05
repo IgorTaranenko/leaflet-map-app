@@ -16,6 +16,8 @@ const Auth = (props) => {
 		e.preventDefault();
 		const data = {login, password};
 		props.logIN(data);
+		setLogin('');
+		setPassword('');
 	}
 	return (
 		
@@ -55,5 +57,9 @@ const mapDispatchToProps = dispatch => {
         logIN: data => dispatch(auth(data))
     };
 };
-
-export default connect(null, mapDispatchToProps)(Auth);
+const mapStateToProps = (state) => {
+    return {
+        isAuth: state.isAuth
+    };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);

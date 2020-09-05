@@ -7,4 +7,4 @@ import {rootReducer} from './reducers/rootReducer.js';
 
 const store = createStore(rootReducer);
 
-render(<RootMap store={store}/>, document.getElementById('root'));
+render(<Root store={store}/>, document.getElementById('root'));
