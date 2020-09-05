@@ -2,11 +2,11 @@ import React from 'react';
 import {Marker, Popup} from 'react-leaflet';
 
 const MarkerItem = (props) => {
-	const {position} = props;
+	const {position, name} = props;
 	return (
 		<Marker position={position}>
         	<Popup>
-                Ваша геолокация!
+                {name}
             </Popup>
 		</Marker>
 	);
